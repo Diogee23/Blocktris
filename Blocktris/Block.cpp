@@ -11,7 +11,7 @@ void Block::setSize(int newSize[4][4])
 	}
 }
 
-std::vector<sf::Vector2i> Block::getPosition() const
+std::vector<sf::Vector2i>& Block::getPosition()
 {
 	return currentPos;
 }
@@ -22,31 +22,33 @@ std::vector<Cell> Block::getCells() const
 	// pre allocares 4 cells for every block
 	cells.reserve(4);
 
+	for (const sf::Vector2i& pos : currentPos)
+	{
+		cells.push_back({ pos.y, pos.x });
+	}
+
 	return cells;
 }
-
 
 int Block::getColor() const
 {
 	return color;
 }
 
-bool Block::moveDown(const std::vector<std::vector<int>>& indexMatrix) 
+void Block::drawBlock(sf::RenderWindow& window, const std::vector<sf::Color>& colors) const
 {
-	for (sf::Vector2i& block : currentPos)
-	{
-		if (ROWS == 1 + block.y || indexMatrix[block.x][1 + block.y] > 0)
-		{
-			return false;
-		}
-	}
+	float gap = 4.f;
+	sf::RectangleShape cell(sf::Vector2f(CELL_SIZE - gap, CELL_SIZE - gap));
 
-	for (sf::Vector2i& block : currentPos)
+	for (const sf::Vector2i& pos : currentPos)
 	{
-		++block.y;
+		cell.setFillColor(colors[color]);
+		cell.setPosition(sf::Vector2f(
+			static_cast<float>(CELL_SIZE * pos.x + gap / 2.f),
+			static_cast<float>(CELL_SIZE * pos.y + gap / 2.f)
+		));
+		window.draw(cell);
 	}
-	
-	return true;
 }
 
 
@@ -65,6 +67,18 @@ void TBlock::constructBlock()
 	setSize(newSize);
 	rotation = 0;
 	color = 1;
+
+	int spawnCol = COLUMNS / 2 - 2; 
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, r }); 
+			}
+		}
+	}
 }
 
 void TBlock::rotateBlock()
@@ -130,6 +144,18 @@ void IBlock::constructBlock()
 	setSize(newSize);
 	rotation = 0;
 	color = 2;
+
+	int spawnCol = COLUMNS / 2 - 2;
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, r });
+			}
+		}
+	}
 }
 
 void IBlock::rotateBlock()
@@ -178,6 +204,18 @@ void LBlock::constructBlock()
 	setSize(newSize);
 	rotation = 0;
 	color = 3; 
+
+	int spawnCol = COLUMNS / 2 - 2;
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, r });
+			}
+		}
+	}
 }
 
 void LBlock::rotateBlock()
@@ -244,6 +282,18 @@ void JBlock::constructBlock()
 	setSize(newSize);
 	rotation = 0;
 	color = 4; 
+
+	int spawnCol = COLUMNS / 2 - 2;
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, r });
+			}
+		}
+	}
 }
 
 void JBlock::rotateBlock()
@@ -309,6 +359,18 @@ void ZBlock::constructBlock()
 	setSize(newSize);
 	rotation = 0;
 	color = 5; 
+
+	int spawnCol = COLUMNS / 2 - 2;
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, r });
+			}
+		}
+	}
 }
 
 void ZBlock::rotateBlock()
@@ -352,7 +414,20 @@ void SBlock::constructBlock()
 		{ 0, 0, 0, 0 }
 	};
 	setSize(newSize);
-	rotation = 6;
+	rotation = 0;
+	color = 6; 
+
+	int spawnCol = COLUMNS / 2 - 2;
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, r });
+			}
+		}
+	}
 }
 
 void SBlock::rotateBlock()
@@ -398,6 +473,18 @@ void OBlock::constructBlock()
 	setSize(newSize);
 	rotation = 0;
 	color = 7; 
+
+	int spawnCol = COLUMNS / 2 - 2;
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, r });
+			}
+		}
+	}
 }
 
 void OBlock::rotateBlock()

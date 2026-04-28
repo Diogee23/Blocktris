@@ -9,7 +9,13 @@ public:
 	// constructor 
 	Grid();
 
+	// generates a new block to use
 	void createBlock();
+
+	// move Block functions 
+	bool moveBlockDown(Block& block);
+	bool moveBlockLeft(Block& block); 
+	bool moveBlockRight(Block& block);
 
 	bool isValidPosition(const Block& block) const; //?
 
@@ -21,7 +27,7 @@ public:
 	// helper function for clear line, checks if the row is full 
 	bool isRowFull(int row); 
 
-	void draw(sf::RenderWindow& window) const;
+	void draw(sf::RenderWindow& window, const std::vector<sf::Color>& colors) const;
 
 private:
 	int grid[ROWS][COLUMNS];

@@ -35,7 +35,7 @@ public:
 	void setRotation(int NewRotation) { rotation = NewRotation; }
 
 	// getter 
-	sf::Vector2i getPosition() const;
+	std::vector<sf::Vector2i>& getPosition();
 	std::vector<Cell> getCells() const; 
 	int getColor() const; 
 
@@ -45,8 +45,8 @@ public:
 	// virtual rotation function -- to be defined in each specific block class 
 	virtual void rotateBlock() = 0;
 
-	//makes the blocks fall
-	bool moveDown(const std::vector<std::vector<int>>& indexMatrix);
+	// draws moving block 
+	void drawBlock(sf::RenderWindow& window, const std::vector<sf::Color>& colors) const; 
 
 protected:
 	// attributes
