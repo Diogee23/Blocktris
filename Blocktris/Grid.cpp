@@ -14,7 +14,7 @@ Grid::Grid()
 	}
 }
 
-void Grid::clearLine()
+int Grid::clearLine()
 {
     int linesCleared = 0;
 
@@ -25,29 +25,48 @@ void Grid::clearLine()
         {
             // Shift all rows above down by one
             for (int row2 = row; row2 > 0; --row2)
+            {
                 for (int col = 0; col < COLUMNS; ++col)
+                {
                     grid[row2][col] = grid[row2 - 1][col];
+                }
+            }
 
             // Clear the top row
             for (int col = 0; col < COLUMNS; ++col)
+            {
                 grid[0][col] = 0;
+            }
 
-            ++row; // recheck this row index since everything shifted down
+            ++linesCleared;
+            ++row; // Recheck this row index since everything shifted down
         }
     }
+
+    return linesCleared; 
 }
 
 bool Grid::isRowFull(int row)
 {
     for (int col = 0; col < COLUMNS; ++col)
-        if (Grid[row][col] == 0) return false;
-    return true;
+    {
+        if (grid[row][col] == 0)
+        {
+            return false;
+        }
+    }
+    return true; 
 }
 
 bool Grid::isValidPosition(const Block& block) const 
 {
 	for (const Cell& cell : block.getCells())
+    {
+        int r = cell.row;
+        int c = cell.col;
 
+
+    }
 	return true;
 }
 
@@ -68,6 +87,11 @@ bool Grid::isInside(int row, int col) const
 }
 
 bool Grid::isEmpty(int row, int col) const
+{
+
+}
+
+void Grid::createBlock()
 {
 
 }

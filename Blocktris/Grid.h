@@ -16,7 +16,8 @@ public:
 	void lockBlock(const Block& block);
 
 	// clears line once complete and moves rows accordingly 
-	void clearLine();
+	int clearLine();
+
 	// helper function for clear line, checks if the row is full 
 	bool isRowFull(int row); 
 
