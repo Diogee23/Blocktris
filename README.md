@@ -1,6 +1,8 @@
 CptS122 PA9 README
 Team Members/Lab Sections: Anastasia Chepel(01), Sterling Angrish(), Kadyn Norris(01), Aaron Johnson(01)
 
+VIDEO EXAMPLE: TODO
+
 Blocktris (our 'lil tetris clone)
 
 Controls:
