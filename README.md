@@ -17,5 +17,6 @@ Down Arrow Key (\\/): Increase the speed of the falling block temporarily
 
 Up Arrow Key (/\\): Instantly drop the falling block to the immediate lowest point it is on top of
 
+
 The goal of blocktris is to clear as many lines as possible as the blocks slowly fall faster and faster. 
 You clear a line by filling every cell across a cell row with a block.
