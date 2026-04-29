@@ -16,49 +16,6 @@ std::vector<sf::Vector2i>& Block::getPosition()
 	return currentPos;
 }
 
-std::vector<sf::Vector2i>& Block::getGhost(Grid grid)
-{
-	// moving the tetromino down until it hits something then returning its position
-	bool keep_falling = 1;
-
-	unsigned char total_movement = 0;
-
-	std::vector<sf::Vector2i>& ghostBlock = currentPos;
-
-	while (keep_falling == 1)
-	{
-		++total_movement;
-
-		for (const Cell& cells : getCells())
-		{
-			if (ROWS == total_movement + currentPos[1].y)
-			{
-				keep_falling = 0;
-
-				break;
-			}
-
-			if (total_movement + currentPos[1].y < 0)
-			{
-				continue;
-			}
-			else if (grid[currentPos[1].x][total_movement + currentPos[1].y] < 0)
-			{
-				keep_falling = 0;
-
-				break;	
-			}
-		}
-	}
-
-	for (Block& block : ghostBlock)
-	{
-		mino.y += total_movement - 1;
-	}
-
-	return ghost_minos;
-}
-////
 
 std::vector<Cell> Block::getCells() const
 {
@@ -142,8 +99,6 @@ void Block::drawPreviewBlock(sf::RenderWindow& window, const std::vector<sf::Col
 		}
 	}
 }
-
-
 
 
 

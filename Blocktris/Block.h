@@ -3,7 +3,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <vector>
 #include "Window.h"
-#include "Grid.h"
+
 
 struct Cell
 {
@@ -37,7 +37,6 @@ public:
 
 	// getter 
 	std::vector<sf::Vector2i>& getPosition();
-	std::vector<sf::Vector2i>& getGhost(Grid grid);
 	std::vector<Cell> getCells() const; 
 	int getColor() const; 
 

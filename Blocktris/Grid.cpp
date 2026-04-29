@@ -68,10 +68,54 @@ bool Grid::moveBlockRight(Block& block)
     return true;
 }
 
-//void Grid::hardDrop(Block& block)
-//{
-//    
-//}
+std::vector<sf::Vector2i>& Grid::getGhost(Block& block)
+{
+	// moving the tetromino down until it hits something then returning its position
+	bool keep_falling = 1;
+
+	unsigned char total_movement = 0;
+
+	std::vector<sf::Vector2i>& ghostBlock = block.getPosition();
+
+	while (keep_falling == 1)
+	{
+		++total_movement;
+
+		for (const Cell& cells : block.getCells())
+		{
+			if (ROWS == total_movement + block.getPosition()[1].y)
+			{
+				keep_falling = 0;
+
+				break;
+			}
+
+			if (total_movement + block.getPosition()[1].y < 0)
+			{
+				continue;
+			}
+			else if (grid[block.getPosition()[1].x][total_movement + block.getPosition()[1].y] < 0)
+			{
+				keep_falling = 0;
+
+				break;	
+			}
+		}
+	}
+
+	for (sf::Vector2i tempBlock : ghostBlock)
+	{
+		 tempBlock.y += total_movement - 1;
+	}
+
+	return ghostBlock;
+}
+////
+
+void Grid::hardDrop(Block& block)
+{
+    
+}
 
 void Grid::rotateBlock(Block& block)
 {
@@ -197,23 +241,22 @@ void Grid::draw(sf::RenderWindow& window, const std::vector<sf::Color>& colors, 
             if (grid[row][col] != 0)
             {
                 sf::RectangleShape cell(sf::Vector2f(CELL_SIZE - gap, CELL_SIZE - gap));
-				// normal color
-				sf::Color color = colors[grid[row][col]];
-               
-				// grey out blocks if the game is over
-				if (isGameOver)
-				{
-					if (row >= greyRow)
+                // grey out blocks if the game is over
+                if (isGameOver)
+                {
+                    if (row >= greyRow)
                     {
-                        color = sf::Color(175, 175, 175);
-                        cell.setFillColor(color);
+                        cell.setFillColor(sf::Color(175, 175, 175));
                     }
-				}
+                    else
+                    {
+                        cell.setFillColor(colors[grid[row][col]]);
+                    }
+                }
                 else
                 {
                     cell.setFillColor(colors[grid[row][col]]);
                 }
-
                 cell.setPosition(sf::Vector2f(static_cast<float>(CELL_SIZE * col + gap / 2.f), static_cast<float>(CELL_SIZE * row + gap / 2.f)));
                 window.draw(cell);
             }

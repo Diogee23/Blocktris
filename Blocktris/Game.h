@@ -31,7 +31,4 @@ private:
 
     // creates new random block 
     std::unique_ptr<Block> spawnBlock();
-
-    // store next block 
-    std::unique_ptr<Block> nextBlock;
 };

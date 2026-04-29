@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Blocktris/Blocktris.vcxproj" />
+  <Project Path="Blocktris/Blocktris.vcxproj" Id="393da0a6-0fc6-47cd-8392-94e592c59323" />
 </Solution>

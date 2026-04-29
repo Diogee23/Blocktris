@@ -109,61 +109,78 @@ void Game::runGame()
         while (FRAME_DURATION <= lag)
         {
             lag -= FRAME_DURATION;
-            ++fallTimer; 
 
-            if (fallTimer >= currentFallSpd)
-            {           
-                bool moved = grid.moveBlockDown(*activeBlock);
-				fallTimer = 0;
+            if (isGameOver) // tick grey effect every frame when game is over
+            {
+                ++greyTimer;
 
-                if (!moved)
+                if (greyTimer >= 5 && greyRow > 0)   // adjust effect speed here
                 {
-                    if (grid.isValidPosition(*activeBlock) )
+                    --greyRow;
+                    greyTimer = 0;
+                }
+            }
+            else if (flashTimer > 0) // adjust flashTimer every frame while game not over
+            {
+                --flashTimer;
+
+                if (flashTimer == 0)
+                {
+                    // clear lines and reset flashRows 
+                    lines_cleared += grid.clearLine();
+                    flashRows.clear();
+
+                    // adjust fall speed based on lines cleared
+                    currentFallSpd = std::max(5, FALL_INTERVAL - (lines_cleared / 5) * 2);
+
+                    // increment level every 5 lines
+                    level = 1 + (lines_cleared / 5);
+
+                    // set new active block and next block 
+                    activeBlock = std::move(nextBlock);
+                    nextBlock = spawnBlock();
+                    checkGameOver(grid, *activeBlock);
+                }
+            }
+            else // only move/lock when not flashing 
+            {
+                ++fallTimer;
+
+                if (fallTimer >= currentFallSpd)
+                {
+                    bool moved = grid.moveBlockDown(*activeBlock);
+                    fallTimer = 0;
+
+                    if (!moved)
                     {
-                        grid.lockBlock(*activeBlock); 
-                        flashRows = grid.getFullRows(); 
-
-                        if (!flashRows.empty())
+                        // check if block is in a valid position
+                        if (grid.isValidPosition(*activeBlock))
                         {
-                            flashTimer = FLASH_DURATION; 
-                        }
+                            // if yes, lock the block in place 
+                            grid.lockBlock(*activeBlock);
+                            flashRows = grid.getFullRows();
 
-                        lines_cleared += grid.clearLine(); 
-
-                        temp_fallSpd = currentFallSpd;
-                        currentFallSpd = std::max(5, FALL_INTERVAL - (lines_cleared / 10) * 2); // speed should increase every 10 lines cleared - Gemini    used to figure out equation
-                        if (currentFallSpd != temp_fallSpd)
-                        {
-                            // checks if speed has changed, if it has then increments level
-                            ++level;
-                            for(int i = 0; i < 7; ++i)
+                            // set up for flash effect 
+                            if (!flashRows.empty())
                             {
-                                cell_colors[i] = sf::Color(std::rand() % 255, std::rand() % 255, std::rand() % 255 );
+                                flashTimer = FLASH_DURATION;
+                            }
+                            else
+                            {
+                                // stops spawn after the block locks
+                                checkGameOver(grid, *activeBlock);
+
+                                if (!isGameOver)
+                                {
+                                    activeBlock = std::move(nextBlock);
+                                    nextBlock = spawnBlock();
+                                }
                             }
                         }
-
-                        //stops spawn after the block locks
-                        checkGameOver(grid, *activeBlock);
-
-                        if (!isGameOver)
+                        else if ((*activeBlock).getPosition()[1].y >= 0)
                         {
-                            activeBlock = std::move(nextBlock);
-                            nextBlock = spawnBlock();
+                            grid.bounceBlock(*activeBlock);
                         }
-                        else
-                        {
-					    	greyTimer++;
-
-					    	if (greyTimer >= 5 && greyRow > 0)   // adjust speed here
-					    	{
-					    		greyRow--;
-					    		greyTimer = 0;
-					    	}
-                        }
-                    }
-                    else if ((*activeBlock).getPosition()[1].y >= 0)
-                    {
-                        grid.bounceBlock(*activeBlock);
                     }
                 }
             }   
@@ -191,11 +208,31 @@ void Game::runGame()
             }
         }
 
-        // draw active block
-        activeBlock->drawBlock(window, cell_colors);
-
         // draw locked blocks 
-        grid.draw(window, cell_colors, isGameOver, greyRow); 
+        grid.draw(window, cell_colors, isGameOver, greyRow);
+
+        // flash full lines 
+        if (flashTimer > 0)
+        {
+            int alpha = (flashTimer % 2 == 0) ? 200.f : 0.f;
+            sf::RectangleShape flashCell(sf::Vector2f(CELL_SIZE - gap, CELL_SIZE - gap));
+            flashCell.setFillColor(sf::Color(255, 255, 255, static_cast<unsigned char>(alpha)));
+
+            for (int row : flashRows)
+            {
+                for (int col = 0; col < COLUMNS; ++col)
+                {
+                    flashCell.setPosition(sf::Vector2f(col * CELL_SIZE + gap / 2.f, row * CELL_SIZE + gap / 2.f));
+                    window.draw(flashCell);
+                }
+            }
+        }
+
+        // draw active block (only while the game is not over and there's no flash effect) 
+        if (!isGameOver && flashTimer == 0)
+        {
+            activeBlock->drawBlock(window, cell_colors);
+        }
 
         // draw sidebar background 
         sf::RectangleShape sidebar(sf::Vector2f(SIDEBAR_WIDTH, CELL_SIZE * ROWS));

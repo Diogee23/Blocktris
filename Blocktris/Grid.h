@@ -14,8 +14,11 @@ public:
 	bool moveBlockLeft(Block& block); 
 	bool moveBlockRight(Block& block);
 
+	// code for the hard drop
+	std::vector<sf::Vector2i>& getGhost(Block& block);
 	void hardDrop(Block& block);
 
+	// if the block is in a bad position, put it in a good slot and place it
 	void bounceBlock(Block& block);
 
 	// rotate Block functions - rotate blocks either clockwise or counter-clockwise
