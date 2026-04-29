@@ -1,5 +1,5 @@
 # CptS122 PA9 README
-# Team Members/Lab Sections: Anastasia Chepel(01), Sterling Angrish(04), Kadyn Norris(01), Aaron Johnson(01)
+Team Members/Lab Sections: Anastasia Chepel(01), Sterling Angrish(04), Kadyn Norris(01), Aaron Johnson(01)
 
 VIDEO EXAMPLE: TODO
 
