@@ -1,9 +1,9 @@
-CptS122 PA9 README
-Team Members/Lab Sections: Anastasia Chepel(01), Sterling Angrish(04), Kadyn Norris(01), Aaron Johnson(01)
+# CptS122 PA9 README
+# Team Members/Lab Sections: Anastasia Chepel(01), Sterling Angrish(04), Kadyn Norris(01), Aaron Johnson(01)
 
 VIDEO EXAMPLE: TODO
 
-Blocktris (our 'lil tetris clone)
+## Blocktris (our 'lil tetris clone)
 
 Controls:
 Left Arrow Key (<-): Move falling block to the left
