@@ -7,7 +7,7 @@ VIDEO EXAMPLE: TODO
 
 ## Blocktris (our 'lil tetris clone)
 
-Controls:
+### Controls:
 
 Left Arrow Key (<-): Move falling block to the left
 
