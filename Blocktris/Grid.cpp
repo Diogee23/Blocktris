@@ -1,6 +1,5 @@
 ﻿#include "Grid.h"
 
-
 Grid::Grid()
 {
 	//loops through all rows
@@ -69,6 +68,34 @@ bool Grid::moveBlockRight(Block& block)
     return true;
 }
 
+//void Grid::hardDrop(Block& block)
+//{
+//    
+//}
+
+void Grid::rotateBlock(Block& block)
+{
+    block.rotateBlock();
+}
+
+void Grid::rotateBlockCounter(Block& block)
+{
+	block.rotateBlockCounter();
+}
+
+void Grid::bounceBlock(Block& block)
+{
+    if(block.getPosition()[1].y >= 0)
+    {
+	    for (sf::Vector2i& pos : block.getPosition())
+	    {
+	    	pos.y -= 2;
+   	    }
+    }
+}
+
+
+
 int Grid::clearLine()
 {
     int linesCleared = 0;
@@ -113,6 +140,21 @@ bool Grid::isRowFull(int row)
     return true; 
 }
 
+std::vector<int> Grid::getFullRows()
+{
+    std::vector<int> fullRows;
+
+    for (int row = ROWS - 1; row >= 0; --row)
+    {
+        if (isRowFull(row))
+        {
+            fullRows.push_back(row); 
+        }
+    }
+
+    return fullRows;
+}
+
 bool Grid::isValidPosition(const Block& block) const 
 {
 	for (const Cell& cell : block.getCells())
@@ -144,24 +186,56 @@ void Grid::lockBlock(const Block& block)
     }
 }
 
-void Grid::draw(sf::RenderWindow& window, const std::vector<sf::Color>& colors) const
+void Grid::draw(sf::RenderWindow& window, const std::vector<sf::Color>& colors, bool isGameOver, int greyRow) const
 {
     float gap = 4.f; 
 
-    for (int row = 0; row < ROWS; ++row)
+    for (int row = ROWS - 1; row >= 0; --row)
     {
-        for (int col = 0; col < COLUMNS; ++col)
+        for (int col = COLUMNS - 1; col >= 0; --col)
         {
             if (grid[row][col] != 0)
             {
                 sf::RectangleShape cell(sf::Vector2f(CELL_SIZE - gap, CELL_SIZE - gap));
-                cell.setFillColor(colors[grid[row][col]]);
+				// normal color
+				sf::Color color = colors[grid[row][col]];
+               
+				// grey out blocks if the game is over
+				if (isGameOver)
+				{
+					if (row >= greyRow)
+                    {
+                        color = sf::Color(175, 175, 175);
+                        cell.setFillColor(color);
+                    }
+				}
+                else
+                {
+                    cell.setFillColor(colors[grid[row][col]]);
+                }
+
                 cell.setPosition(sf::Vector2f(static_cast<float>(CELL_SIZE * col + gap / 2.f), static_cast<float>(CELL_SIZE * row + gap / 2.f)));
                 window.draw(cell);
             }
         }
     }
+	
 }
+
+bool Grid::isTopReached() const
+{
+	// checks if ANY column in the top row is filled
+	for (int i = 0; i < COLUMNS; ++i)
+    {
+		if (grid[0][i] != 0) 
+        {
+			return true;
+		}
+	}
+	return false;
+}
+
+
 
 bool Grid::isInside(int row, int col) const
 {
@@ -185,37 +259,4 @@ bool Grid::isEmpty(int row, int col) const
     {
         return false; 
     }
-}
-
-
-void Grid::createBlock()
-{
-    int randNum = rand() % 7;
-
-    switch(randNum)
-    {
-	    case 0:
-            //code new TBlock();
-		    break;
-	    case 1:
-            //code new IBlock();
-		    break;
-	    case 2:
-            //code new LBlock();
-            break;
-        case 3:
-            //code new JBlock();
-            break;
-		case 4:
-			//code new ZBlock();
-			break;
-		case 5:
-			//code new SBlock();
-			break;
-		case 6:
-			//code new OBlock();
-			break;
-
-    }
-    
 }

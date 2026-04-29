@@ -3,6 +3,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <vector>
 #include "Window.h"
+#include "Grid.h"
 
 struct Cell
 {
@@ -36,6 +37,7 @@ public:
 
 	// getter 
 	std::vector<sf::Vector2i>& getPosition();
+	std::vector<sf::Vector2i>& getGhost(Grid grid);
 	std::vector<Cell> getCells() const; 
 	int getColor() const; 
 
@@ -44,9 +46,13 @@ public:
 
 	// virtual rotation function -- to be defined in each specific block class 
 	virtual void rotateBlock() = 0;
+	virtual void rotateBlockCounter() = 0;
 
 	// draws moving block 
 	void drawBlock(sf::RenderWindow& window, const std::vector<sf::Color>& colors) const; 
+
+	// draws the next block in the preview window
+	void drawPreviewBlock(sf::RenderWindow& window, const std::vector<sf::Color>& colors) const;
 
 protected:
 	// attributes
@@ -72,6 +78,8 @@ public:
 
 	// rotates the block 
 	void rotateBlock() override;
+	void rotateBlockCounter() override;
+
 private:
 
 };
@@ -92,6 +100,7 @@ public:
 
 	// rotates the block 
 	void rotateBlock() override;
+	void rotateBlockCounter() override;
 private:
 
 };
@@ -112,6 +121,7 @@ public:
 
 	// rotates the block 
 	void rotateBlock() override;
+	void rotateBlockCounter() override;
 private:
 
 };
@@ -132,6 +142,7 @@ public:
 
 	// rotates the block
 	void rotateBlock() override;
+	void rotateBlockCounter() override;
 private:
 
 };
@@ -152,6 +163,7 @@ public:
 
 	// rotates the block 
 	void rotateBlock() override;
+	void rotateBlockCounter() override;
 private:
 
 };
@@ -172,6 +184,7 @@ public:
 
 	// rotates the block 
 	void rotateBlock() override;
+	void rotateBlockCounter() override;
 private:
 
 };
@@ -179,10 +192,7 @@ private:
 class OBlock : public Block {
 public:
 	// constructor -- calls construct block function 
-	OBlock() 
-	{ 
-		constructBlock(); 
-	}
+	OBlock() { 	constructBlock(); }
 
 	// destructor 
 	~OBlock() = default;
@@ -192,6 +202,7 @@ public:
 
 	// rotates the block 
 	void rotateBlock() override;
+	void rotateBlockCounter() override;
 private:
 
 };

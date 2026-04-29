@@ -16,6 +16,50 @@ std::vector<sf::Vector2i>& Block::getPosition()
 	return currentPos;
 }
 
+std::vector<sf::Vector2i>& Block::getGhost(Grid grid)
+{
+	// moving the tetromino down until it hits something then returning its position
+	bool keep_falling = 1;
+
+	unsigned char total_movement = 0;
+
+	std::vector<sf::Vector2i>& ghostBlock = currentPos;
+
+	while (keep_falling == 1)
+	{
+		++total_movement;
+
+		for (const Cell& cells : getCells())
+		{
+			if (ROWS == total_movement + currentPos[1].y)
+			{
+				keep_falling = 0;
+
+				break;
+			}
+
+			if (total_movement + currentPos[1].y < 0)
+			{
+				continue;
+			}
+			else if (grid[currentPos[1].x][total_movement + currentPos[1].y] < 0)
+			{
+				keep_falling = 0;
+
+				break;	
+			}
+		}
+	}
+
+	for (Block& block : ghostBlock)
+	{
+		mino.y += total_movement - 1;
+	}
+
+	return ghost_minos;
+}
+////
+
 std::vector<Cell> Block::getCells() const
 {
 	std::vector<Cell> cells;
@@ -51,6 +95,58 @@ void Block::drawBlock(sf::RenderWindow& window, const std::vector<sf::Color>& co
 	}
 }
 
+void Block::drawPreviewBlock(sf::RenderWindow& window, const std::vector<sf::Color>& colors) const
+{
+	float cellSize = 460.f / 8.f;  // 4x4 grid scaled to fit preview box
+	float gap = 4.f;
+	float previewX = static_cast<float>(CELL_SIZE * COLUMNS + 20.f);
+	float previewY = 20.f; 
+
+	// find preview window bounds
+	int minR = 4, maxR = 0, minC = 4, maxC = 0; 
+
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				minR = std::min(minR, r);
+				maxR = std::max(maxR, r); 
+				minC = std::min(minC, c);
+				maxC = std::max(maxC, c); 
+			}
+		}
+	}
+
+	// calculate block dimensions in pixels
+	float blockWidth = (maxC - minC + 1) * cellSize; 
+	float blockHeight = (maxR - minR + 1) * cellSize; 
+
+	// offset to center the block inside the preview box
+	float offsetX = previewX + (460.f - blockWidth) / 2.f - minR * cellSize; 
+	float offsetY = previewY + (460.f - blockHeight) / 2.f - minC * cellSize;
+
+	sf::RectangleShape cell(sf::Vector2f(cellSize - gap, cellSize - gap));
+	cell.setFillColor(colors[color]);
+
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				cell.setPosition(sf::Vector2f(offsetX + c * cellSize + gap / 2.f, offsetY + r * cellSize + gap / 2.f));
+				window.draw(cell);
+			}
+		}
+	}
+}
+
+
+
+
+
 
 
 
@@ -83,6 +179,14 @@ void TBlock::constructBlock()
 
 void TBlock::rotateBlock()
 {
+	int spawnCol = currentPos[1].x;
+	int spawnRow = currentPos[1].y;
+
+	for (int r = 0; r < 4; ++r)
+	{
+		currentPos.pop_back();
+	}
+
 	if (rotation % 4 == 0)
 	{
 		int newSize[4][4] = {
@@ -111,6 +215,7 @@ void TBlock::rotateBlock()
 		{ 1, 0, 0, 0 },
 		{ 0, 0, 0, 0 }
 		};
+		--spawnCol;
 		setSize(newSize);
 	}
 	else
@@ -124,6 +229,92 @@ void TBlock::rotateBlock()
 		setSize(newSize);
 	}
 	rotation++;
+
+	
+	
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, spawnRow + r }); 
+			}
+		}
+	}
+} 
+
+void TBlock::rotateBlockCounter()
+{
+	int spawnCol = currentPos[1].x;
+	int spawnRow = currentPos[1].y;
+
+	for (int r = 0; r < 4; ++r)
+	{
+		currentPos.pop_back();
+	}
+
+	--rotation;
+
+	if (rotation == -1)
+	{
+		rotation = 3;
+	}
+
+	if (rotation % 4 == 0)
+	{
+		int newSize[4][4] = {
+		{ 0, 1, 0, 0 },
+		{ 1, 1, 0, 0 },
+		{ 0, 1, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+		setSize(newSize);
+	}
+	else if (rotation % 4 == 1)
+	{
+		int newSize[4][4] = {
+		{ 0, 1, 0, 0 },
+		{ 1, 1, 1, 0 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+		setSize(newSize);
+	}
+	else if (rotation % 4 == 2)
+	{
+		int newSize[4][4] = {
+		{ 1, 0, 0, 0 },
+		{ 1, 1, 0, 0 },
+		{ 1, 0, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+		--spawnCol;
+		setSize(newSize);
+	}
+	else
+	{
+		int newSize[4][4] = {
+		{ 1, 1, 1, 0 },
+		{ 0, 1, 0, 0 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+		setSize(newSize);
+	}
+	
+
+
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, spawnRow + r });
+			}
+		}
+	}
 }
 
 
@@ -136,10 +327,10 @@ void TBlock::rotateBlock()
 void IBlock::constructBlock()
 {
 	int newSize[4][4] = {
-		{ 1, 1, 1, 1 },
-		{ 0, 0, 0, 0 },
-		{ 0, 0, 0, 0 },
-		{ 0, 0, 0, 0 }
+		{ 1, 0, 0, 0 },
+		{ 1, 0, 0, 0 },
+		{ 1, 0, 0, 0 },
+		{ 1, 0, 0, 0 }
 	};
 	setSize(newSize);
 	rotation = 0;
@@ -160,18 +351,15 @@ void IBlock::constructBlock()
 
 void IBlock::rotateBlock()
 {
-	
-	if (rotation % 2 == 0)
+	int spawnCol = currentPos[1].x - 1;
+	int spawnRow = currentPos[1].y;
+
+	for (int r = 0; r < 4; ++r)
 	{
-		int newSize[4][4] = {
-		{ 1, 0, 0, 0 },
-		{ 1, 0, 0, 0 },
-		{ 1, 0, 0, 0 },
-		{ 1, 0, 0, 0 }
-		};
-		setSize(newSize);
+		currentPos.pop_back();
 	}
-	else
+
+	if (rotation % 2 == 0)
 	{
 		int newSize[4][4] = {
 		{ 1, 1, 1, 1 },
@@ -181,7 +369,81 @@ void IBlock::rotateBlock()
 		};
 		setSize(newSize);
 	}
+	else
+	{
+		int newSize[4][4] = {
+		{ 1, 0, 0, 0 },
+		{ 1, 0, 0, 0 },
+		{ 1, 0, 0, 0 },
+		{ 1, 0, 0, 0 }
+		};
+		++spawnCol;
+		setSize(newSize);
+	}
 	rotation++;
+
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, spawnRow + r });
+			}
+		}
+	}
+}
+
+void IBlock::rotateBlockCounter()
+{
+	int spawnCol = currentPos[1].x - 1;
+	int spawnRow = currentPos[1].y;
+
+	for (int r = 0; r < 4; ++r)
+	{
+		currentPos.pop_back();
+	}
+
+	--rotation;
+
+	if (rotation == -1)
+	{
+		rotation = 3;
+	}
+
+	if (rotation % 2 == 0)
+	{
+		int newSize[4][4] = {
+		{ 1, 1, 1, 1 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+		setSize(newSize);
+	}
+	else
+	{
+		int newSize[4][4] = {
+		{ 1, 0, 0, 0 },
+		{ 1, 0, 0, 0 },
+		{ 1, 0, 0, 0 },
+		{ 1, 0, 0, 0 }
+		};
+		++spawnCol;
+		setSize(newSize);
+	}
+	
+
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, spawnRow + r });
+			}
+		}
+	}
 }
 
 
@@ -220,6 +482,14 @@ void LBlock::constructBlock()
 
 void LBlock::rotateBlock()
 {
+	int spawnCol = currentPos[1].x - 1;
+	int spawnRow = currentPos[1].y;
+
+	for (int r = 0; r < 4; ++r)
+	{
+		currentPos.pop_back();
+	}
+
 	if (rotation % 4 == 0)
 	{
 		int newSize[4][4] = {
@@ -228,6 +498,7 @@ void LBlock::rotateBlock()
 		{ 0, 0, 0, 0 },
 		{ 0, 0, 0, 0 }
 		};
+		
 		setSize(newSize);
 	}
 	else if (rotation % 4 == 1)
@@ -238,6 +509,7 @@ void LBlock::rotateBlock()
 		{ 0, 1, 0, 0 },
 		{ 0, 0, 0, 0 }
 		};
+		++spawnCol;
 		setSize(newSize);
 	}
 	else if (rotation % 4 == 2)
@@ -248,6 +520,7 @@ void LBlock::rotateBlock()
 		{ 0, 0, 0, 0 },
 		{ 0, 0, 0, 0 }
 		};
+		
 		setSize(newSize);
 	}
 	else
@@ -258,9 +531,98 @@ void LBlock::rotateBlock()
 		{ 1, 1, 0, 0 },
 		{ 0, 0, 0, 0 }
 		};
+		++spawnCol;
 		setSize(newSize);
 	}
 	rotation++;
+
+	 
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, spawnRow + r }); 
+			}
+		}
+	}
+}
+
+void LBlock::rotateBlockCounter()
+{
+	int spawnCol = currentPos[1].x - 1;
+	int spawnRow = currentPos[1].y;
+
+	for (int r = 0; r < 4; ++r)
+	{
+		currentPos.pop_back();
+	}
+
+	--rotation;
+
+	if (rotation == -1)
+	{
+		rotation = 3;
+	}
+
+	if (rotation % 4 == 0)
+	{
+		int newSize[4][4] = {
+		{ 1, 1, 1, 0 },
+		{ 1, 0, 0, 0 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+
+		setSize(newSize);
+	}
+	else if (rotation % 4 == 1)
+	{
+		int newSize[4][4] = {
+		{ 1, 1, 0, 0 },
+		{ 0, 1, 0, 0 },
+		{ 0, 1, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+		++spawnCol;
+		setSize(newSize);
+	}
+	else if (rotation % 4 == 2)
+	{
+		int newSize[4][4] = {
+		{ 0, 0, 1, 0 },
+		{ 1, 1, 1, 0 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+
+		setSize(newSize);
+	}
+	else
+	{
+		int newSize[4][4] = {
+		{ 1, 0, 0, 0 },
+		{ 1, 0, 0, 0 },
+		{ 1, 1, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+		++spawnCol;
+		setSize(newSize);
+	}
+	
+
+
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, spawnRow + r });
+			}
+		}
+	}
 }
 
 
@@ -298,6 +660,14 @@ void JBlock::constructBlock()
 
 void JBlock::rotateBlock()
 {
+	int spawnCol = currentPos[1].x - 1;
+	int spawnRow = currentPos[1].y;
+
+	for (int r = 0; r < 4; ++r)
+	{
+		currentPos.pop_back();
+	}
+
 	if (rotation % 4 == 0)
 	{
 		int newSize[4][4] = {
@@ -306,6 +676,7 @@ void JBlock::rotateBlock()
 		{ 0, 0, 0, 0 },
 		{ 0, 0, 0, 0 }
 		};
+		
 		setSize(newSize);
 	}
 	else if (rotation % 4 == 1)
@@ -316,6 +687,7 @@ void JBlock::rotateBlock()
 		{ 1, 0, 0, 0 },
 		{ 0, 0, 0, 0 }
 		};
+		++spawnCol;
 		setSize(newSize);
 	}
 	else if (rotation % 4 == 2)
@@ -326,6 +698,7 @@ void JBlock::rotateBlock()
 		{ 0, 0, 0, 0 },
 		{ 0, 0, 0, 0 }
 		};
+		
 		setSize(newSize);
 	}
 	else
@@ -339,6 +712,93 @@ void JBlock::rotateBlock()
 		setSize(newSize);
 	}
 	rotation++;
+
+	 
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, spawnRow + r }); 
+			}
+		}
+	}
+}
+
+void JBlock::rotateBlockCounter()
+{
+	int spawnCol = currentPos[1].x - 1;
+	int spawnRow = currentPos[1].y;
+
+	for (int r = 0; r < 4; ++r)
+	{
+		currentPos.pop_back();
+	}
+
+	--rotation;
+
+	if (rotation == -1)
+	{
+		rotation = 3;
+	}
+
+	if (rotation % 4 == 0)
+	{
+		int newSize[4][4] = {
+		{ 1, 0, 0, 0 },
+		{ 1, 1, 1, 0 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+
+		setSize(newSize);
+	}
+	else if (rotation % 4 == 1)
+	{
+		int newSize[4][4] = {
+		{ 1, 1, 0, 0 },
+		{ 1, 0, 0, 0 },
+		{ 1, 0, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+		++spawnCol;
+		setSize(newSize);
+	}
+	else if (rotation % 4 == 2)
+	{
+		int newSize[4][4] = {
+		{ 1, 1, 1, 0 },
+		{ 0, 0, 1, 0 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+
+		setSize(newSize);
+	}
+	else
+	{
+		int newSize[4][4] = {
+		{ 0, 1, 0, 0 },
+		{ 0, 1, 0, 0 },
+		{ 1, 1, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+		setSize(newSize);
+	}
+	
+
+
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, spawnRow + r });
+			}
+		}
+	}
 }
 
 
@@ -375,6 +835,14 @@ void ZBlock::constructBlock()
 
 void ZBlock::rotateBlock()
 {
+	int spawnCol = currentPos[1].x - 1;
+	int spawnRow = currentPos[1].y;
+
+	for (int r = 0; r < 4; ++r)
+	{
+		currentPos.pop_back();
+	}
+
 	if (rotation % 2 == 0)
 	{
 		int newSize[4][4] = {
@@ -393,9 +861,80 @@ void ZBlock::rotateBlock()
 		{ 0, 0, 0, 0 },
 		{ 0, 0, 0, 0 }
 		};
+		++spawnCol;
 		setSize(newSize);
 	}
 	rotation++;
+
+	
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, spawnRow + r });
+			}
+		}
+	}
+}
+
+void ZBlock::rotateBlockCounter()
+{
+	int spawnCol = currentPos[1].x - 1;
+	int spawnRow = currentPos[1].y;
+
+	for (int r = 0; r < 4; ++r)
+	{
+		currentPos.pop_back();
+	}
+
+	--rotation;
+
+	if (rotation == -1)
+	{
+		rotation = 3;
+	}
+
+	if(rotation == -1)
+	{
+		rotation = 3;
+	}
+
+	if (rotation % 2 == 0)
+	{
+		int newSize[4][4] = {
+		{ 0, 1, 0, 0 },
+		{ 1, 1, 0, 0 },
+		{ 1, 0, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+		setSize(newSize);
+	}
+	else
+	{
+		int newSize[4][4] = {
+		{ 1, 1, 0, 0 },
+		{ 0, 1, 1, 0 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+		++spawnCol;
+		setSize(newSize);
+	}
+	
+
+
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, spawnRow + r });
+			}
+		}
+	}
 }
 
 
@@ -432,6 +971,14 @@ void SBlock::constructBlock()
 
 void SBlock::rotateBlock()
 {
+	int spawnCol = currentPos[1].x - 1;
+	int spawnRow = currentPos[1].y;
+
+	for (int r = 0; r < 4; ++r)
+	{
+		currentPos.pop_back();
+	}
+
 	if (rotation % 2 == 0)
 	{
 		int newSize[4][4] = {
@@ -450,9 +997,75 @@ void SBlock::rotateBlock()
 		{ 0, 0, 0, 0 },
 		{ 0, 0, 0, 0 }
 		};
+		
 		setSize(newSize);
 	}
 	rotation++;
+
+
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, spawnRow + r }); 
+			}
+		}
+	}
+}
+
+void SBlock::rotateBlockCounter()
+{
+	int spawnCol = currentPos[1].x - 1;
+	int spawnRow = currentPos[1].y;
+
+	for (int r = 0; r < 4; ++r)
+	{
+		currentPos.pop_back();
+	}
+
+	--rotation;
+
+	if (rotation == -1)
+	{
+		rotation = 3;
+	}
+
+	if (rotation % 2 == 0)
+	{
+		int newSize[4][4] = {
+		{ 1, 0, 0, 0 },
+		{ 1, 1, 0, 0 },
+		{ 0, 1, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+		setSize(newSize);
+	}
+	else
+	{
+		int newSize[4][4] = {
+		{ 0, 1, 1, 0 },
+		{ 1, 1, 0, 0 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 }
+		};
+
+		setSize(newSize);
+	}
+	
+
+
+	for (int r = 0; r < 4; ++r)
+	{
+		for (int c = 0; c < 4; ++c)
+		{
+			if (size[r][c] == 1)
+			{
+				currentPos.push_back({ spawnCol + c, spawnRow + r });
+			}
+		}
+	}
 }
 
 
@@ -489,12 +1102,10 @@ void OBlock::constructBlock()
 
 void OBlock::rotateBlock()
 {
-	int newSize[4][4] = {
-		{ 1, 1, 0, 0 },
-		{ 1, 1, 0, 0 },
-		{ 0, 0, 0, 0 },
-		{ 0, 0, 0, 0 }
-	};
-	setSize(newSize);
-	rotation = 0;
+	return;
+}
+
+void OBlock::rotateBlockCounter()
+{
+	return;
 }

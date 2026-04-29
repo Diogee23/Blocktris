@@ -10,20 +10,28 @@ class Game
 {
 public:
     // constructor 
-    Game() 
-    {
-        // nothing to do here
-    }
+    Game() = default;
 
     // destructor 
-    ~Game() 
-    {
-        // nothing to do here 
-    }
+    ~Game() = default;
 
     // runs the main Blocktris game 
     void runGame();
 
+	bool isGameOver = false;
+
+	void checkGameOver(const Grid& grid, const Block& block);
+    // starts below the board
+	int greyRow = ROWS;   
+	int greyTimer = 0;
+
 private:
+    // attributes 
+    Grid grid;
+
+    // creates new random block 
     std::unique_ptr<Block> spawnBlock();
+
+    // store next block 
+    std::unique_ptr<Block> nextBlock;
 };
