@@ -15,7 +15,7 @@ public:
 	bool moveBlockRight(Block& block);
 
 	// code for the hard drop
-	std::vector<sf::Vector2i>& getGhost(Block& block);
+	std::vector<sf::Vector2i> getGhost(Block& block);
 	void hardDrop(Block& block);
 
 	// if the block is in a bad position, put it in a good slot and place it

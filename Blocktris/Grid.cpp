@@ -36,7 +36,7 @@ bool Grid::moveBlockLeft(Block& block)
 {
     for (const Cell& cell : block.getCells())
     {
-        if (cell.col - 1 < 0 || grid[cell.row][cell.col - 1] != 0)
+        if (grid[cell.row][cell.col - 1] != 0)
         {
             return false;
         }
@@ -45,7 +45,7 @@ bool Grid::moveBlockLeft(Block& block)
     for (sf::Vector2i& pos : block.getPosition())
     {
         --pos.x;
-		pos.x < 1 ? pos.x = pos.x + 10 : pos.x = pos.x;
+		pos.x < 0 ? pos.x = pos.x + 10 : pos.x = pos.x;
 		pos.x > 10 ? pos.x = 10 - pos.x : pos.x = pos.x;
     }
 
@@ -56,7 +56,7 @@ bool Grid::moveBlockRight(Block& block)
 {
     for (const Cell& cell : block.getCells())
     {
-        if (cell.col + 1 >= COLUMNS || grid[cell.row][cell.col + 1] != 0)
+        if (grid[cell.row][cell.col + 1] != 0)
         {
             return false;
         }
@@ -65,29 +65,29 @@ bool Grid::moveBlockRight(Block& block)
     for (sf::Vector2i& pos : block.getPosition())
     {
         ++pos.x;
-		pos.x < 1 ? pos.x = pos.x + 10 : pos.x = pos.x;
+		pos.x < 0 ? pos.x = pos.x + 10 : pos.x = pos.x;
 		pos.x > 10 ? pos.x = 10 - pos.x : pos.x = pos.x;
     }
 
     return true;
 }
 
-std::vector<sf::Vector2i>& Grid::getGhost(Block& block)
+std::vector<sf::Vector2i> Grid::getGhost(Block& block)
 {
 	// moving the tetromino down until it hits something then returning its position
 	bool keep_falling = 1;
 
 	unsigned char total_movement = 0;
 
-	std::vector<sf::Vector2i>& ghostBlock = block.getPosition();
+	std::vector<sf::Vector2i> ghostBlock = block.getPosition();
 
 	while (keep_falling == 1)
 	{
 		for (const Cell& cells : block.getCells())
 		{
-			if (ROWS == total_movement + cells.row ||
-				(total_movement + cells.row >= 0 &&
-					grid[cells.col][total_movement + cells.row] != 0))
+			if (total_movement + cells.row + 1 >= ROWS||
+				(total_movement + cells.row + 1 >= 0 &&
+					grid[cells.row + total_movement + 1][cells.col] != 0))
 			{
 				keep_falling = 0;
 				break;
@@ -283,7 +283,7 @@ bool Grid::isTopReached() const
 
 bool Grid::isInside(int row, int col) const
 {
-    if (row >= 0 && row < ROWS && col >= 0 && col < COLUMNS)
+    if (row >= 0 && row < ROWS)
     {
         return true; 
     }
