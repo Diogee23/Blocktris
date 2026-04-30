@@ -33,7 +33,8 @@ public:
 
 	// setters 
 	void setSize(int newSize[4][4]);
-	void setRotation(int NewRotation) { rotation = NewRotation; }
+	void setRotation(int newRotation) { rotation = newRotation; }
+	void setPosition(std::vector<sf::Vector2i> newPos) { currentPos = newPos; }
 
 	// getter 
 	std::vector<sf::Vector2i>& getPosition();
@@ -51,7 +52,7 @@ public:
 	void drawBlock(sf::RenderWindow& window, const std::vector<sf::Color>& colors) const; 
 
 	// draws the next block in the preview window
-	void drawPreviewBlock(sf::RenderWindow& window, const std::vector<sf::Color>& colors) const;
+	void drawPreviewBlock(sf::RenderWindow& window, const std::vector<sf::Color>& colors, bool isGameOver, int greyRow) const;
 
 protected:
 	// attributes

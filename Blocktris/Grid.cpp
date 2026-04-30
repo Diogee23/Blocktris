@@ -45,6 +45,8 @@ bool Grid::moveBlockLeft(Block& block)
     for (sf::Vector2i& pos : block.getPosition())
     {
         --pos.x;
+		pos.x < 1 ? pos.x = pos.x + 10 : pos.x = pos.x;
+		pos.x > 10 ? pos.x = 10 - pos.x : pos.x = pos.x;
     }
 
     return true;
@@ -63,6 +65,8 @@ bool Grid::moveBlockRight(Block& block)
     for (sf::Vector2i& pos : block.getPosition())
     {
         ++pos.x;
+		pos.x < 1 ? pos.x = pos.x + 10 : pos.x = pos.x;
+		pos.x > 10 ? pos.x = 10 - pos.x : pos.x = pos.x;
     }
 
     return true;
@@ -79,43 +83,39 @@ std::vector<sf::Vector2i>& Grid::getGhost(Block& block)
 
 	while (keep_falling == 1)
 	{
-		++total_movement;
-
 		for (const Cell& cells : block.getCells())
 		{
-			if (ROWS == total_movement + block.getPosition()[1].y)
+			if (ROWS == total_movement + cells.row ||
+				(total_movement + cells.row >= 0 &&
+					grid[cells.col][total_movement + cells.row] != 0))
 			{
 				keep_falling = 0;
-
 				break;
 			}
-
-			if (total_movement + block.getPosition()[1].y < 0)
-			{
-				continue;
-			}
-			else if (grid[block.getPosition()[1].x][total_movement + block.getPosition()[1].y] < 0)
-			{
-				keep_falling = 0;
-
-				break;	
-			}
 		}
+
+        if (keep_falling == 1)
+        {
+            ++total_movement;
+        }
 	}
 
-	for (sf::Vector2i tempBlock : ghostBlock)
+	for (sf::Vector2i& pos : ghostBlock)
 	{
-		 tempBlock.y += total_movement - 1;
+		 pos.y += total_movement;
 	}
 
 	return ghostBlock;
 }
-////
+
 
 void Grid::hardDrop(Block& block)
 {
-    
+    std::vector<sf::Vector2i> ghost = getGhost(block);
+    block.setPosition(ghost);
 }
+
+
 
 void Grid::rotateBlock(Block& block)
 {
@@ -242,11 +242,12 @@ void Grid::draw(sf::RenderWindow& window, const std::vector<sf::Color>& colors, 
             {
                 sf::RectangleShape cell(sf::Vector2f(CELL_SIZE - gap, CELL_SIZE - gap));
                 // grey out blocks if the game is over
+
                 if (isGameOver)
                 {
                     if (row >= greyRow)
                     {
-                        cell.setFillColor(sf::Color(175, 175, 175));
+                        cell.setFillColor(sf::Color(75, 75, 75));
                     }
                     else
                     {

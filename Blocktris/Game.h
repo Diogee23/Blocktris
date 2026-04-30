@@ -1,5 +1,7 @@
 ﻿#pragma once
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+#include <windows.h>
 #include <memory>
 #include <chrono>
 #include "Window.h"

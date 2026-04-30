@@ -52,7 +52,7 @@ void Block::drawBlock(sf::RenderWindow& window, const std::vector<sf::Color>& co
 	}
 }
 
-void Block::drawPreviewBlock(sf::RenderWindow& window, const std::vector<sf::Color>& colors) const
+void Block::drawPreviewBlock(sf::RenderWindow& window, const std::vector<sf::Color>& colors, bool isGameOver, int greyRow) const
 {
 	float cellSize = 460.f / 8.f;  // 4x4 grid scaled to fit preview box
 	float gap = 4.f;
@@ -85,7 +85,15 @@ void Block::drawPreviewBlock(sf::RenderWindow& window, const std::vector<sf::Col
 	float offsetY = previewY + (460.f - blockHeight) / 2.f - minC * cellSize;
 
 	sf::RectangleShape cell(sf::Vector2f(cellSize - gap, cellSize - gap));
-	cell.setFillColor(colors[color]);
+
+	if (isGameOver && greyRow == 0)
+	{
+		cell.setFillColor(sf::Color(75, 75, 75));
+	}
+	else
+	{
+		cell.setFillColor(colors[color]);
+	}
 
 	for (int r = 0; r < 4; ++r)
 	{

@@ -8,6 +8,10 @@ void Game::runGame()
     // window 
     sf::RenderWindow window(sf::VideoMode({ CELL_SIZE * COLUMNS + SIDEBAR_WIDTH, CELL_SIZE * ROWS }), "Blocktris");
 
+    // bring game window to front
+    HWND hwnd = window.getNativeHandle();
+    SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE); 
+
     // initialize variables
     int lag = 0;
     int fallTimer = 0; 
@@ -51,19 +55,23 @@ void Game::runGame()
 
     // add in text font 
     sf::Font font; 
-    font.openFromFile("arial.ttf");
+    font.openFromFile("comic.ttf");
+
+    // add in music
+    sf::Music music;
+    music.openFromFile("blocktris.mp3");
+
+    // play music
+    music.play();
+
+    // add in pop sound effect
+    sf::SoundBuffer buffer;
+    buffer.loadFromFile("pop.mp3");
+    sf::Sound sound(buffer);
 
     while (window.isOpen())
     {
-		/*if (isGameOver)
-		{
-            for when we want to display a game over menu or title or something 
-            window.clear();
-			window.display?();
-			break;
-		}*/
-
-        // get time difference between current frame and previous frame 
+		// get time difference between current frame and previous frame 
         int delta_time = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - current_time).count();
 
         // add time difference to lag 
@@ -102,6 +110,10 @@ void Game::runGame()
 				{
 					grid.rotateBlockCounter(*activeBlock);
 				}
+                if (keyPressed->code == sf::Keyboard::Key::Up)
+                {
+                    grid.hardDrop(*activeBlock);
+                }
             }
         }
 
@@ -129,6 +141,9 @@ void Game::runGame()
                     // clear lines and reset flashRows 
                     lines_cleared += grid.clearLine();
                     flashRows.clear();
+
+                    // play pop sound effect
+                    sound.play();
 
                     // adjust fall speed based on lines cleared
                     currentFallSpd = std::max(5, FALL_INTERVAL - (lines_cleared / 5) * 2);
@@ -188,14 +203,10 @@ void Game::runGame()
 
         // render
         window.clear(); 
-
-        // draw empty grid 
         float gap = 4.f;
 
-        // create cell
+        // create cells
         sf::RectangleShape cell(sf::Vector2f(CELL_SIZE - gap, CELL_SIZE - gap));
-
-        // set cell color 
         cell.setFillColor(cell_colors[8]);
 
         // draw empty grid
@@ -247,7 +258,7 @@ void Game::runGame()
         window.draw(preview_window); 
 
         // draw next block preview
-        nextBlock->drawPreviewBlock(window, cell_colors);
+        nextBlock->drawPreviewBlock(window, cell_colors, isGameOver, greyRow);
 
         // draw lines cleared label 
         sf::Text lines_label(font, "Lines Cleared: ", 40); 
@@ -272,6 +283,29 @@ void Game::runGame()
         level_count.setFillColor(sf::Color::White);
         level_count.setPosition(sf::Vector2f(static_cast<float>(CELL_SIZE* COLUMNS + 20.f + level_label.getLocalBounds().size.x), 570.f));
         window.draw(level_count);
+
+        // if the game is over 
+        if (isGameOver && greyRow == 0)
+        {
+            // draw gameover window 
+            sf::RectangleShape gameover_window(sf::Vector2f(440.f, 440.f));
+            gameover_window.setFillColor(sf::Color(50, 50, 50));
+            gameover_window.setPosition(sf::Vector2f(static_cast<float>((CELL_SIZE* COLUMNS) / 2 - 220), 
+                static_cast<float>((CELL_SIZE* ROWS) / 2 - 220)));
+            window.draw(gameover_window);
+
+            sf::Text game_label(font, "GAME", 120);
+            game_label.setFillColor(sf::Color(170, 0, 0));
+            game_label.setPosition(sf::Vector2f(static_cast<float>((CELL_SIZE * COLUMNS) / 2 - 180), 
+                static_cast<float>((CELL_SIZE * ROWS) / 2 - 160)));
+            window.draw(game_label);
+
+            sf::Text over_label(font, "OVER", 120);
+            over_label.setFillColor(sf::Color(170, 0, 0));
+            over_label.setPosition(sf::Vector2f(static_cast<float>((CELL_SIZE * COLUMNS) / 2 - 170), 
+                static_cast<float>((CELL_SIZE * ROWS) / 2)));
+            window.draw(over_label);
+        }
 
         window.display();
     }
