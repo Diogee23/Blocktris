@@ -66,7 +66,7 @@ bool Grid::moveBlockRight(Block& block)
     {
         ++pos.x;
 		pos.x < 0 ? pos.x = pos.x + 10 : pos.x = pos.x;
-		pos.x > 10 ? pos.x = 10 - pos.x : pos.x = pos.x;
+		pos.x > 9 ? pos.x = 10 - pos.x : pos.x = pos.x;
     }
 
     return true;
