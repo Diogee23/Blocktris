@@ -145,6 +145,12 @@ void Game::runGame()
                     // play pop sound effect
                     sound.play();
 
+					// decrement Andy's Health
+					if (fightingAndy)
+					{
+					    --bossHP;
+					}
+
                     // adjust fall speed based on lines cleared
                     currentFallSpd = std::max(5, FALL_INTERVAL - (lines_cleared / 5) * 2);
 
@@ -322,14 +328,21 @@ void Game::checkGameOver(const Grid& grid, const Block& block)
 
 std::unique_ptr<Block> Game::spawnBlock()
 {
-    switch (std::rand() % 7)
-    {
-        case 0: return std::make_unique<TBlock>();
-        case 1: return std::make_unique<IBlock>();
-        case 2: return std::make_unique<LBlock>();
-        case 3: return std::make_unique<JBlock>();
-        case 4: return std::make_unique<ZBlock>();
-        case 5: return std::make_unique<SBlock>();
-        default: return std::make_unique<OBlock>();
-    }
+     int randVal = std::rand();
+ 	if (randVal % 25 == 0)
+ 	{
+ 	    fightingAndy = true;
+ 	    return std::make_unique<ABlock>();
+ 	}
+
+ 	switch (randVal % 7)
+ 	{
+		case 0: return std::make_unique<TBlock>();
+     	case 1: return std::make_unique<IBlock>();
+     	case 2: return std::make_unique<LBlock>();
+     	case 3: return std::make_unique<JBlock>();
+     	case 4: return std::make_unique<ZBlock>();
+     	case 5: return std::make_unique<SBlock>();
+     	default: return std::make_unique<OBlock>();
+ 	}
 }
