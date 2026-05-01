@@ -40,6 +40,7 @@ void Game::runGame()
           sf::Color(93, 199, 71),   // 6 S block (green)
           sf::Color(253, 210, 67),  // 7 O block (yellow)
           sf::Color(36, 36, 36)     // 8 grid cells (gray)
+		  sf::Color(250, 222, 190)  // 9 Andy Block
     };
 
     // seed for random
