@@ -206,3 +206,25 @@ public:
 private:
 
 };
+
+class ABlock : public Block {
+public:
+	// constructor -- calls construct block function 
+	ABlock()
+	{
+		constructBlock();
+	}
+
+	// destructor 
+	~ABlock() = default;
+
+	// creates the block 
+	void constructBlock() override;
+
+	// rotates the block 
+	void rotateBlock() override;
+	void rotateBlockCounter() override;
+
+private:
+
+};
