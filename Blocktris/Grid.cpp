@@ -129,13 +129,55 @@ void Grid::rotateBlockCounter(Block& block)
 
 void Grid::bounceBlock(Block& block)
 {
-    if(block.getPosition()[1].y >= 0)
+    // essentially the same as hard drop, but it checks above the block as well
+
+bool keep_falling = 1;
+
+unsigned char total_movement = 0;
+
+// Only difference from the getGhost function is that we move the ghost block far above the grid to avoid clipping issues
+for (sf::Vector2i& pos : block.getPosition())
+{
+    pos.y = pos.y - 19;
+}
+
+std::vector<sf::Vector2i> ghostBlock = block.getPosition();
+
+while (keep_falling == 1)
+{
+    for (const Cell& cells : block.getCells())
     {
-	    for (sf::Vector2i& pos : block.getPosition())
-	    {
-	    	pos.y -= 2;
-   	    }
+        if (total_movement + cells.row + 1 >= ROWS ||
+            (total_movement + cells.row + 1 >= 0 &&
+                grid[cells.row + total_movement + 1][cells.col] != 0))
+        {
+            keep_falling = 0;
+            break;
+        }
     }
+
+    if (keep_falling == 1)
+    {
+        ++total_movement;
+    }
+}
+
+for (sf::Vector2i& pos : ghostBlock)
+{
+    pos.y += total_movement;
+}
+
+block.setPosition(ghostBlock);
+
+
+// If the block is still above the grid, smush it flat on top row so it can actually be placed and the game can end
+for (sf::Vector2i& pos : block.getPosition())
+{
+    if (pos.y < 0)
+    {
+        pos.y = 0;
+	}
+}
 }
 
 
