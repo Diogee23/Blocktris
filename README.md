@@ -20,7 +20,7 @@ VIDEO EXAMPLE: TODO
 12. Open the Debug folder, and paste all of the dll files with ctrl + v
 13. Reopen Blocktris.slnx, run the debugger, and have fun!
 
-This section only exists due to the suffering caused by trying to get this to work on everyone's devices
+######This section only exists due to the suffering caused by trying to get this to work on everyone's devices
 
 ## Blocktris (our 'lil tetris clone)
 
