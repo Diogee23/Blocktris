@@ -102,12 +102,12 @@ void Game::runGame()
                 {
                     grid.moveBlockDown(*activeBlock);
                 }
-				if (keyPressed->code == sf::Keyboard::Key::X)
-				{
+				if (keyPressed->code == sf::Keyboard::Key::X && (*activeBlock).getPosition()[1].y != 0) 
+				{                                      //second condition prevents rotation when the block is above the grid
 					grid.rotateBlock(*activeBlock);
 				}
-                if (keyPressed->code == sf::Keyboard::Key::Z)
-				{
+				if (keyPressed->code == sf::Keyboard::Key::Z && (*activeBlock).getPosition()[1].y != 0)
+				{                                      //second condition prevents rotation when the block is above the grid
 					grid.rotateBlockCounter(*activeBlock);
 				}
                 if (keyPressed->code == sf::Keyboard::Key::Up)
