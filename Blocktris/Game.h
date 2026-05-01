@@ -7,6 +7,8 @@
 #include "Window.h"
 #include "Block.h"
 #include "Grid.h"
+#include "Character.h"
+#include "CharAnimation.h"
 
 class Game 
 {
@@ -26,6 +28,16 @@ public:
     // starts below the board
 	int greyRow = ROWS;   
 	int greyTimer = 0;
+
+	Character Andy;
+
+	CharAnimation upsetAndy;
+	bool andyAnimationStarted = false;
+
+	CharAnimation angeredAndy;
+	bool andyAnimation2Started = false;
+
+	void resetGame(std::unique_ptr<Block>& activeBlock, std::unique_ptr<Block>& nextBlock, Grid& grid, int& lines_cleared, int& level, int& fallTimer, int& currentFallSpd);
 
 private:
     // attributes 

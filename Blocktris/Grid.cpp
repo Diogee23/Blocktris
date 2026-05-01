@@ -108,14 +108,11 @@ std::vector<sf::Vector2i> Grid::getGhost(Block& block)
 	return ghostBlock;
 }
 
-
 void Grid::hardDrop(Block& block)
 {
     std::vector<sf::Vector2i> ghost = getGhost(block);
     block.setPosition(ghost);
 }
-
-
 
 void Grid::rotateBlock(Block& block)
 {
@@ -131,56 +128,54 @@ void Grid::bounceBlock(Block& block)
 {
     // essentially the same as hard drop, but it checks above the block as well
 
-bool keep_falling = 1;
+    bool keep_falling = 1;
 
-unsigned char total_movement = 0;
+    unsigned char total_movement = 0;
 
-// Only difference from the getGhost function is that we move the ghost block far above the grid to avoid clipping issues
-for (sf::Vector2i& pos : block.getPosition())
-{
-    pos.y = pos.y - 19;
-}
-
-std::vector<sf::Vector2i> ghostBlock = block.getPosition();
-
-while (keep_falling == 1)
-{
-    for (const Cell& cells : block.getCells())
+    // Only difference from the getGhost function is that we move the ghost block far above the grid to avoid clipping issues
+    for (sf::Vector2i& pos : block.getPosition())
     {
-        if (total_movement + cells.row + 1 >= ROWS ||
-            (total_movement + cells.row + 1 >= 0 &&
-                grid[cells.row + total_movement + 1][cells.col] != 0))
+        pos.y = pos.y - 19;
+    }
+
+    std::vector<sf::Vector2i> ghostBlock = block.getPosition();
+
+    while (keep_falling == 1)
+    {
+        for (const Cell& cells : block.getCells())
         {
-            keep_falling = 0;
-            break;
+            if (total_movement + cells.row + 1 >= ROWS ||
+                (total_movement + cells.row + 1 >= 0 &&
+                    grid[cells.row + total_movement + 1][cells.col] != 0))
+            {
+                keep_falling = 0;
+                break;
+            }
+        }
+
+        if (keep_falling == 1)
+        {
+            ++total_movement;
         }
     }
 
-    if (keep_falling == 1)
+    for (sf::Vector2i& pos : ghostBlock)
     {
-        ++total_movement;
+        pos.y += total_movement;
+    }
+
+    block.setPosition(ghostBlock);
+
+
+    // If the block is still above the grid, smush it flat on top row so it can actually be placed and the game can end
+    for (sf::Vector2i& pos : block.getPosition())
+    {
+        if (pos.y < 0)
+        {
+            pos.y = 0;
+	    }
     }
 }
-
-for (sf::Vector2i& pos : ghostBlock)
-{
-    pos.y += total_movement;
-}
-
-block.setPosition(ghostBlock);
-
-
-// If the block is still above the grid, smush it flat on top row so it can actually be placed and the game can end
-for (sf::Vector2i& pos : block.getPosition())
-{
-    if (pos.y < 0)
-    {
-        pos.y = 0;
-	}
-}
-}
-
-
 
 int Grid::clearLine()
 {
@@ -320,8 +315,6 @@ bool Grid::isTopReached() const
 	}
 	return false;
 }
-
-
 
 bool Grid::isInside(int row, int col) const
 {

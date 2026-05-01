@@ -141,15 +141,29 @@ sfml-audio-d.lib
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ABlock.cpp" />
     <ClCompile Include="Block.cpp" />
+    <ClCompile Include="Character.cpp" />
+    <ClCompile Include="CharAnimation.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Grid.cpp" />
+    <ClCompile Include="IBlock.cpp" />
+    <ClCompile Include="JBlock.cpp" />
+    <ClCompile Include="LBlock.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="OBlock.cpp" />
+    <ClCompile Include="SBlock.cpp" />
+    <ClCompile Include="TBlock.cpp" />
+    <ClCompile Include="TestCases.cpp" />
+    <ClCompile Include="ZBlock.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Block.h" />
+    <ClInclude Include="Character.h" />
+    <ClInclude Include="CharAnimation.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="Grid.h" />
+    <ClInclude Include="TestCases.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

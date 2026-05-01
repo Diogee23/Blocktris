@@ -38,8 +38,8 @@ public:
 
 	// getter 
 	std::vector<sf::Vector2i>& getPosition();
-	std::vector<Cell> getCells() const; 
-	int getColor() const; 
+	std::vector<Cell> getCells() const;
+	int getColor() const;
 
 	// virtual constructor function -- to be defined in each specific block class 
 	virtual void constructBlock() = 0;
@@ -49,7 +49,7 @@ public:
 	virtual void rotateBlockCounter() = 0;
 
 	// draws moving block 
-	void drawBlock(sf::RenderWindow& window, const std::vector<sf::Color>& colors) const; 
+	void drawBlock(sf::RenderWindow& window, const std::vector<sf::Color>& colors) const;
 
 	// draws the next block in the preview window
 	void drawPreviewBlock(sf::RenderWindow& window, const std::vector<sf::Color>& colors, bool isGameOver, int greyRow) const;
@@ -58,7 +58,7 @@ protected:
 	// attributes
 	int size[4][4];
 	int rotation;
-	int color; 
+	int color;
 	std::vector<sf::Vector2i> currentPos;
 };
 
@@ -71,7 +71,7 @@ public:
 	}
 
 	// destructor 
-	~TBlock() = default; 
+	~TBlock() = default;
 
 	// creates the block 
 	void constructBlock() override;
@@ -87,9 +87,9 @@ private:
 class IBlock : public Block {
 public:
 	// constructor -- calls construct block function 
-	IBlock() 
-	{ 
-		constructBlock(); 
+	IBlock()
+	{
+		constructBlock();
 	}
 
 	// destructor 
@@ -108,9 +108,9 @@ private:
 class LBlock : public Block {
 public:
 	// constructor -- calls construct block function
-	LBlock() 
-	{ 
-		constructBlock(); 
+	LBlock()
+	{
+		constructBlock();
 	}
 
 	// destructor 
@@ -129,9 +129,9 @@ private:
 class JBlock : public Block {
 public:
 	// constructor -- calls construct block function 
-	JBlock() 
-	{ 
-		constructBlock(); 
+	JBlock()
+	{
+		constructBlock();
 	}
 
 	// destructor 
@@ -150,9 +150,9 @@ private:
 class ZBlock : public Block {
 public:
 	// constructor -- calls construct block function 
-	ZBlock() 
-	{ 
-		constructBlock(); 
+	ZBlock()
+	{
+		constructBlock();
 	}
 
 	// destructor 
@@ -171,9 +171,9 @@ private:
 class SBlock : public Block {
 public:
 	// constructor -- calls construct block function 
-	SBlock() 
-	{ 
-		constructBlock(); 
+	SBlock()
+	{
+		constructBlock();
 	}
 
 	// destructor 
@@ -192,7 +192,7 @@ private:
 class OBlock : public Block {
 public:
 	// constructor -- calls construct block function 
-	OBlock() { 	constructBlock(); }
+	OBlock() { constructBlock(); }
 
 	// destructor 
 	~OBlock() = default;

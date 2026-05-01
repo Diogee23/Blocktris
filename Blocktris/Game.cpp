@@ -12,6 +12,13 @@ void Game::runGame()
     HWND hwnd = window.getNativeHandle();
     SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE); 
 
+	//spawn andy
+	Andy.load("resting_andy.png");
+	upsetAndy.loadSheet("upset_andy.png");
+	angeredAndy.loadSheet("Angered_andy.png");
+
+	Andy.setPosition(sf::Vector2f(CELL_SIZE * COLUMNS + SIDEBAR_WIDTH - 455.f, CELL_SIZE * ROWS - 550.f));
+   
     // initialize variables
     int lag = 0;
     int fallTimer = 0; 
@@ -39,7 +46,7 @@ void Game::runGame()
           sf::Color(243, 71, 89),   // 5 Z block (red)
           sf::Color(93, 199, 71),   // 6 S block (green)
           sf::Color(253, 210, 67),  // 7 O block (yellow)
-          sf::Color(36, 36, 36)     // 8 grid cells (gray)
+          sf::Color(36, 36, 36),    // 8 grid cells (gray)
 		  sf::Color(250, 222, 190)  // 9 Andy Block
     };
 
@@ -63,12 +70,20 @@ void Game::runGame()
     music.openFromFile("blocktris.mp3");
 
     // play music
-    music.play();
+    if (!isGameOver)
+    {
+        music.play();
+    }
 
     // add in pop sound effect
     sf::SoundBuffer buffer;
     buffer.loadFromFile("pop.mp3");
     sf::Sound sound(buffer);
+
+	// add in game over sound effect
+	sf::SoundBuffer buffer_2;
+	buffer_2.loadFromFile("Game_Over_OFallon.mp3");
+	sf::Sound gameover_sound(buffer_2);
 
     while (window.isOpen())
     {
@@ -114,6 +129,10 @@ void Game::runGame()
                 if (keyPressed->code == sf::Keyboard::Key::Up)
                 {
                     grid.hardDrop(*activeBlock);
+                }
+                if (keyPressed->code == sf::Keyboard::Key::R && isGameOver)
+                {
+                    resetGame(activeBlock, nextBlock, grid, lines_cleared, level, fallTimer, currentFallSpd);
                 }
             }
         }
@@ -206,6 +225,10 @@ void Game::runGame()
                     }
                 }
             }   
+			if (Andy.sprite.has_value())
+			{
+				upsetAndy.update(*Andy.sprite);
+			}
         }
 
         // render
@@ -258,6 +281,16 @@ void Game::runGame()
         sidebar.setPosition(sf::Vector2f(static_cast<float>(CELL_SIZE * COLUMNS), 0.f)); 
         window.draw(sidebar); 
 
+		//andy
+		Andy.draw(window);
+
+		if (isGameOver && !andyAnimationStarted)
+		{
+			gameover_sound.play();
+			upsetAndy.start(*Andy.sprite);
+			andyAnimationStarted = true;
+		}
+
         // draw preview window 
         sf::RectangleShape preview_window(sf::Vector2f(460.f, 460.f)); 
         preview_window.setFillColor(sf::Color::White); 
@@ -304,17 +337,42 @@ void Game::runGame()
             sf::Text game_label(font, "GAME", 120);
             game_label.setFillColor(sf::Color(170, 0, 0));
             game_label.setPosition(sf::Vector2f(static_cast<float>((CELL_SIZE * COLUMNS) / 2 - 180), 
-                static_cast<float>((CELL_SIZE * ROWS) / 2 - 160)));
+                static_cast<float>((CELL_SIZE * ROWS) / 2 - 190)));
             window.draw(game_label);
 
             sf::Text over_label(font, "OVER", 120);
             over_label.setFillColor(sf::Color(170, 0, 0));
             over_label.setPosition(sf::Vector2f(static_cast<float>((CELL_SIZE * COLUMNS) / 2 - 170), 
-                static_cast<float>((CELL_SIZE * ROWS) / 2)));
+                static_cast<float>((CELL_SIZE * ROWS) / 2 - 60)));
             window.draw(over_label);
-        }
 
-        window.display();
+            sf::Text restart_label(font, "Press [R] to Restart", 40);
+            restart_label.setFillColor(sf::Color(170, 0, 0));
+            restart_label.setPosition(sf::Vector2f(static_cast<float>((CELL_SIZE* COLUMNS) / 2 - 200),
+                static_cast<float>((CELL_SIZE* ROWS) / 2 + 190)));
+            window.draw(restart_label);
+
+			if (!andyAnimation2Started)
+			{
+				angeredAndy.start(*Andy.sprite);
+
+				//// ⭐ Compute screen size
+				//float screenW = CELL_SIZE * COLUMNS + SIDEBAR_WIDTH;
+				//float screenH = CELL_SIZE * ROWS;
+
+				//// ⭐ Center the sprite
+				//Andy.sprite->setOrigin(angeredAndy.frameWidth / 2.f, angeredAndy.frameHeight / 2.f);
+				//Andy.sprite->setPosition(screenW / 2.f, screenH / 2.f);
+
+				//// ⭐ Scale to fill the screen
+				//float scaleX = screenW / angeredAndy.frameWidth;
+				//float scaleY = screenH / angeredAndy.frameHeight;
+				//Andy.sprite->setScale(scaleX, scaleY);
+
+				andyAnimation2Started = true;
+			}
+        }
+		window.display();
     }
 }
 
@@ -327,9 +385,36 @@ void Game::checkGameOver(const Grid& grid, const Block& block)
 	}
 }
 
+void Game::resetGame(std::unique_ptr<Block>& activeBlock, std::unique_ptr<Block>& nextBlock, Grid& grid, int& lines_cleared, int& level, int& fallTimer, int& currentFallSpd)
+{
+	sf::RenderWindow window(sf::VideoMode({ CELL_SIZE * COLUMNS + SIDEBAR_WIDTH, CELL_SIZE * ROWS }), "Blocktris");
+
+    grid = Grid();
+    isGameOver = false;
+    greyRow = ROWS;
+    greyTimer = 0;
+    lines_cleared = 0;
+    level = 1;
+    fallTimer = 0;
+    currentFallSpd = 30; 
+    activeBlock = spawnBlock();
+    nextBlock = spawnBlock();
+
+	andyAnimationStarted = false;
+	andyAnimation2Started = false;
+	Andy.load("resting_andy.png");
+	upsetAndy.loadSheet("upset_andy.png");
+	angeredAndy.loadSheet("Angered_andy.png");
+
+	Andy.setPosition(sf::Vector2f(CELL_SIZE * COLUMNS + SIDEBAR_WIDTH - 455.f, CELL_SIZE * ROWS - 550.f));
+
+	Andy.draw(window);
+
+}
+
 std::unique_ptr<Block> Game::spawnBlock()
 {
-     int randVal = std::rand();
+    int randVal = std::rand();
  	if (randVal % 25 == 0)
  	{
  	    fightingAndy = true;

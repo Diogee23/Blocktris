@@ -20,7 +20,7 @@ private:
 
     int currentFrame = 0;
     int frameTimer = 0;
-    bool playing = false;
+    bool playing = false; //
 
     sf::Texture angered_sheet;
     int frameWidth2 = 990;
@@ -29,5 +29,14 @@ private:
 
     int currentFrame2 = 0;
     int frameTimer2 = 0;
-    bool playing2 = false;
+    bool playing2 = false; //wrath_of_andy
+
+	// sf::Texture angered_sheet;
+	// int frameWidth3 = 990;
+	// int frameHeight3 = 1188;
+	// int totalFrames3 = 27;
+
+	// int currentFrame3 = 0;
+	// int frameTimer3 = 0;
+	// bool teehee = false;
 };

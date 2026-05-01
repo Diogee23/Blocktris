@@ -26,16 +26,16 @@ public:
 	void rotateBlockCounter(Block& block);
 
 	// checks if the block is in a valid position 
-	bool isValidPosition(const Block& block) const; //?
+	bool isValidPosition(const Block& block) const; 
 
 	// stores the block's position in the grid 
 	void lockBlock(const Block& block);
 
-	// clears line once complete and moves rows accordingly 
-	int clearLine();
-
 	// helper function for clear line, checks if the row is full 
 	bool isRowFull(int row); 
+
+	// clears line once complete and moves rows accordingly 
+	int clearLine();
 
 	// returns rows that are full
 	std::vector<int> getFullRows();
