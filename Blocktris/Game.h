@@ -31,6 +31,10 @@ private:
     // attributes 
     Grid grid;
 
+	// Andy Fight
+	bool fightingAndy = false;
+	int bossHP = 20;
+
     // creates new random block 
     std::unique_ptr<Block> spawnBlock();
 };
