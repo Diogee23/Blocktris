@@ -39,6 +39,5 @@ X Key: Rotate the block clockwise
 Z key: Rotate the block counter-clockwise
 
 
-
 The goal of blocktris is to clear as many lines as possible as the blocks slowly fall faster and faster. 
-You clear a line by filling every cell across a cell row with a block.
+You clear a line by filling every cell across a cell row with a block. **Make sure not to upset Andy!!!**
