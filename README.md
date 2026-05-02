@@ -36,7 +36,9 @@ Up Arrow Key (/\\): Instantly drop the falling block to the immediate lowest poi
 
 X Key: Rotate the block clockwise
 
-Z key: Rotate the block counter-clockwise
+Z Key: Rotate the block counter-clockwise
+
+R Key: Restart game after game-over
 
 
 The goal of blocktris is to clear as many lines as possible as the blocks slowly fall faster and faster. 
