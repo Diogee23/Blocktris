@@ -14,6 +14,9 @@ void Game::runGame()
 
 	//spawn andy
 	Andy.load("resting_andy.png");
+
+    AndyBlock.load("resting_andy.png");
+
 	upsetAndy.loadSheet("upset_andy.png");
 	angeredAndy.loadSheet("Angered_andy.png");
 
@@ -67,13 +70,7 @@ void Game::runGame()
 
     // add in music
     sf::Music music;
-    music.openFromFile("blocktris.mp3");
-
-    // play music
-    if (!isGameOver)
-    {
-        music.play();
-    }
+    music.openFromFile("Cozy Cloudscape.mp3"); // Music Created by: The one and only Sterling!!!!!!!!!!! :D
 
     // add in pop sound effect
     sf::SoundBuffer buffer;
@@ -85,9 +82,12 @@ void Game::runGame()
 	buffer_2.loadFromFile("Game_Over_OFallon.mp3");
 	sf::Sound gameover_sound(buffer_2);
 
+    // play music
+    music.play();
+
     while (window.isOpen())
     {
-		// get time difference between current frame and previous frame 
+        // get time difference between current frame and previous frame 
         int delta_time = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - current_time).count();
 
         // add time difference to lag 
@@ -132,6 +132,8 @@ void Game::runGame()
                 }
                 if (keyPressed->code == sf::Keyboard::Key::R && isGameOver)
                 {
+                    gameover_sound.stop();
+                    music.play();
                     resetGame(activeBlock, nextBlock, grid, lines_cleared, level, fallTimer, currentFallSpd);
                 }
             }
@@ -273,7 +275,7 @@ void Game::runGame()
         if (!isGameOver && flashTimer == 0)
         {
             activeBlock->drawBlock(window, cell_colors);
-        }
+        }     
 
         // draw sidebar background 
         sf::RectangleShape sidebar(sf::Vector2f(SIDEBAR_WIDTH, CELL_SIZE * ROWS));
@@ -286,6 +288,7 @@ void Game::runGame()
 
 		if (isGameOver && !andyAnimationStarted)
 		{
+            music.stop(); 
 			gameover_sound.play();
 			upsetAndy.start(*Andy.sprite);
 			andyAnimationStarted = true;
@@ -343,13 +346,13 @@ void Game::runGame()
             sf::Text over_label(font, "OVER", 120);
             over_label.setFillColor(sf::Color(170, 0, 0));
             over_label.setPosition(sf::Vector2f(static_cast<float>((CELL_SIZE * COLUMNS) / 2 - 170), 
-                static_cast<float>((CELL_SIZE * ROWS) / 2 - 60)));
+                static_cast<float>((CELL_SIZE * ROWS) / 2 - 40)));
             window.draw(over_label);
 
             sf::Text restart_label(font, "Press [R] to Restart", 40);
             restart_label.setFillColor(sf::Color(170, 0, 0));
-            restart_label.setPosition(sf::Vector2f(static_cast<float>((CELL_SIZE* COLUMNS) / 2 - 200),
-                static_cast<float>((CELL_SIZE* ROWS) / 2 + 190)));
+            restart_label.setPosition(sf::Vector2f(static_cast<float>((CELL_SIZE* COLUMNS) / 2 - 195),
+                static_cast<float>((CELL_SIZE* ROWS) / 2 + 130)));
             window.draw(restart_label);
 
 			if (!andyAnimation2Started)
@@ -415,11 +418,12 @@ void Game::resetGame(std::unique_ptr<Block>& activeBlock, std::unique_ptr<Block>
 std::unique_ptr<Block> Game::spawnBlock()
 {
     int randVal = std::rand();
- 	if (randVal % 25 == 0)
+
+ 	/*if (randVal % 5 == 0 && !fightingAndy)
  	{
  	    fightingAndy = true;
  	    return std::make_unique<ABlock>();
- 	}
+ 	}*/
 
  	switch (randVal % 7)
  	{

@@ -10,7 +10,7 @@
 #include "Character.h"
 #include "CharAnimation.h"
 
-class Game 
+class Game
 {
 public:
     // constructor 
@@ -22,14 +22,19 @@ public:
     // runs the main Blocktris game 
     void runGame();
 
+	void checkGameOver(const Grid& grid, const Block& block);
+
+	void resetGame(std::unique_ptr<Block>& activeBlock, std::unique_ptr<Block>& nextBlock, Grid& grid, int& lines_cleared, int& level, int& fallTimer, int& currentFallSpd);
+
 	bool isGameOver = false;
 
-	void checkGameOver(const Grid& grid, const Block& block);
     // starts below the board
 	int greyRow = ROWS;   
 	int greyTimer = 0;
 
 	Character Andy;
+
+	Character AndyBlock;
 
 	CharAnimation upsetAndy;
 	bool andyAnimationStarted = false;
@@ -37,13 +42,11 @@ public:
 	CharAnimation angeredAndy;
 	bool andyAnimation2Started = false;
 
-	void resetGame(std::unique_ptr<Block>& activeBlock, std::unique_ptr<Block>& nextBlock, Grid& grid, int& lines_cleared, int& level, int& fallTimer, int& currentFallSpd);
-
 private:
     // attributes 
     Grid grid;
 
-	// Andy Fight
+	// Andy Fightga
 	bool fightingAndy = false;
 	int bossHP = 20;
 

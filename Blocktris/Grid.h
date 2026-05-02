@@ -34,6 +34,8 @@ public:
 	// helper function for clear line, checks if the row is full 
 	bool isRowFull(int row); 
 
+	int getGrid(int i, int j) { return grid[i][j]; }
+
 	// clears line once complete and moves rows accordingly 
 	int clearLine();
 

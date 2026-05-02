@@ -9,7 +9,7 @@ public:
     bool load(const std::string& filename);
     void setPosition(const sf::Vector2f& pos);
     void draw(sf::RenderWindow& window) const;
-
+   
 private:
     sf::Texture texture;
 };

@@ -23,7 +23,7 @@ private:
     bool playing = false; //
 
     sf::Texture angered_sheet;
-    int frameWidth2 = 990;
+    int frameWidth2 = 1188;
     int frameHeight2 = 1188;
     int totalFrames2 = 27;
 
